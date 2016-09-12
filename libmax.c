@@ -60,11 +60,11 @@ vector make_n_vector(size_t bytes) {
 void insert_vector(void *data, vector *v) {
   if (! (v->num_elements < v->table_size)) {
     v->elements = xrealloc(v->elements, TABLE_CAPACITY_BYTES(v) * 2);
-    memset(v->elements + TABLE_CAPACITY_BYTES(v), 0, TABLE_CAPACITY_BYTES(v));
+    memset((char*) v->elements + TABLE_CAPACITY_BYTES(v), 0, TABLE_CAPACITY_BYTES(v));
     v->table_size *= 2;
   }
 
-  memcpy(v->elements + POSITION_LEVEL_BYTES(v), data, v->element_size);
+  memcpy((char*) v->elements + POSITION_LEVEL_BYTES(v), data, v->element_size);
   v->num_elements++;
 }
 
@@ -78,8 +78,8 @@ void delete_vector(size_t position, vector *v) {
   size_t j = position + 1;
 
   while (j < v->num_elements) {
-    memcpy(v->elements + TABLE_POSITION(i, v),
-           v->elements + TABLE_POSITION(j, v),
+    memcpy((char*) v->elements + TABLE_POSITION(i, v),
+           (char*) v->elements + TABLE_POSITION(j, v),
            v->element_size);
     i++;
     j++;
@@ -93,5 +93,13 @@ void access_vector(void *result, size_t position, vector *v) {
     return;
   }
 
-  memcpy(result, v->elements + TABLE_POSITION(position, v), v->element_size);
+  memcpy(result, (char*) v->elements + TABLE_POSITION(position, v), v->element_size);
+}
+
+void* access_bytes(size_t pos, vector* v) {
+  if (pos > v->num_elements - 1) {
+    return NULL;
+  }
+
+  return (char*) v->elements + TABLE_POSITION(pos, v);
 }

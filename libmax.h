@@ -46,8 +46,17 @@ void access_vector(void *result, size_t position, vector *v);
 /* delete an element */
 void delete_vector(size_t position, vector *v);
 
+void* access_bytes(size_t pos, vector* v);
+
 #define INSERT_ELEMENT(e, v) insert_vector(&e, &v)
 #define ACCESS_ELEMENT(p, t, v) access_vector((void*) &t, p, &v)
+#define DELETE_ELEMENT(p, v) delete_vector(p, &v)
+#define FREE_VECTOR(v) free(v.elements)
+#define ACCESS_POSITION(p, type, v) (* ((type*) access_bytes(p, &v)))
+#define VECTOR_PUSHBACK(e, t, v) {              \
+    t __vpushback_temp = e;                     \
+    INSERT_ELEMENT(__vpushback_temp, v);        \
+}
 
 #endif
                                    
